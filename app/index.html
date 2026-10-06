@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XrayAI — AI Chest X-Ray Disease Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <!-- Immersive background -->
+    <div class="scene" aria-hidden="true">
+      <div class="scene-photo scene-photo--main"></div>
+      <div class="scene-photo scene-photo--accent"></div>
+      <div class="scene-grid"></div>
+      <canvas id="neural-canvas" class="neural-canvas"></canvas>
+      <div class="scan-beam"></div>
+      <div class="scene-vignette"></div>
+    </div>
+
+    <header class="header">
+      <a href="#" class="logo" aria-label="XrayAI home">
+        <span class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="currentColor" />
+            <path
+              d="M10 16c0-3.3 2.7-8 6-8s6 4.7 6 8-2.7 8-6 8-6-4.7-6-8z"
+              stroke="#0a0c0f"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <circle cx="16" cy="14" r="2" fill="#0a0c0f" />
+            <path d="M13 20c1 1.5 2 2 3 2s2-.5 3-2" stroke="#0a0c0f" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="logo-text">
+          XrayAI
+          <small>Deep Learning</small>
+        </span>
+      </a>
+      <div class="header-actions">
+        <div class="ai-chip" title="Convolutional Neural Network">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <path d="M9 9h6M9 12h6M9 15h4" stroke-linecap="round" />
+            <circle cx="18" cy="6" r="2" fill="currentColor" stroke="none" />
+          </svg>
+          CNN Model
+        </div>
+        <div class="status-pill" id="model-status">
+          <span class="status-dot"></span>
+          Model Ready
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="ai-badge">
+            <span class="ai-badge-icon">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2a1 1 0 0 1 .9.6l1.5 3.2 3.5.5a1 1 0 0 1 .55 1.7l-2.5 2.5.6 3.5a1 1 0 0 1-1.45 1l-3.1-1.6-3.1 1.6a1 1 0 0 1-1.45-1l.6-3.5L4.05 8a1 1 0 0 1 .55-1.7l3.5-.5L9.1 2.6A1 1 0 0 1 10 2z" />
+              </svg>
+            </span>
+            Powered by Artificial Intelligence
+          </div>
+          <h1>
+            Chest X-Ray
+            <span class="gradient-text">Disease Detection</span>
+          </h1>
+          <p>
+            Our deep learning model analyzes lung radiographs in seconds — detecting
+            COVID-19, Pneumonia, Lung Opacity, or Normal with Grad-CAM explainability.
+          </p>
+          <div class="hero-features">
+            <div class="feature-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+              4-Class CNN
+            </div>
+            <div class="feature-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              Real-time Analysis
+            </div>
+            <div class="feature-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
+              Grad-CAM Heatmaps
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="xray-frame">
+            <div class="xray-frame__img"></div>
+            <div class="xray-frame__scan"></div>
+            <div class="xray-frame__corners"></div>
+            <div class="xray-frame__label">AI SCAN ACTIVE</div>
+          </div>
+          <svg class="neural-graphic" viewBox="0 0 280 200">
+            <defs>
+              <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#3ecf8e" stop-opacity="0" />
+                <stop offset="50%" stop-color="#3ecf8e" stop-opacity="0.8" />
+                <stop offset="100%" stop-color="#3ecf8e" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <circle class="node node--pulse" cx="40" cy="100" r="6" fill="#3ecf8e" />
+            <circle class="node" cx="100" cy="60" r="5" fill="#3ecf8e" opacity="0.7" />
+            <circle class="node" cx="100" cy="140" r="5" fill="#3ecf8e" opacity="0.7" />
+            <circle class="node node--pulse" cx="160" cy="100" r="7" fill="#5eead4" />
+            <circle class="node" cx="220" cy="70" r="5" fill="#3ecf8e" opacity="0.6" />
+            <circle class="node" cx="220" cy="130" r="5" fill="#3ecf8e" opacity="0.6" />
+            <circle class="node node--pulse" cx="260" cy="100" r="6" fill="#3ecf8e" />
+            <line x1="46" y1="100" x2="94" y2="63" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="46" y1="100" x2="94" y2="137" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="106" y1="60" x2="153" y2="100" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="106" y1="140" x2="153" y2="100" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="167" y1="100" x2="215" y2="73" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="167" y1="100" x2="215" y2="127" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="225" y1="70" x2="254" y2="100" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+            <line x1="225" y1="130" x2="254" y2="100" stroke="url(#lineGrad)" stroke-width="1.5" class="edge" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- AI pipeline graphic -->
+      <section class="pipeline" aria-label="AI analysis pipeline">
+        <div class="pipeline-step">
+          <div class="pipeline-icon">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="4" y="6" width="24" height="20" rx="2" />
+              <circle cx="16" cy="16" r="5" />
+            </svg>
+          </div>
+          <span>Upload X-Ray</span>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 40 12"><path d="M0 6h32M28 1l8 5-8 5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+        </div>
+        <div class="pipeline-step pipeline-step--active">
+          <div class="pipeline-icon">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="6" y="6" width="20" height="20" rx="2" />
+              <path d="M11 12h10M11 16h10M11 20h6" />
+            </svg>
+          </div>
+          <span>CNN Inference</span>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 40 12"><path d="M0 6h32M28 1l8 5-8 5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-icon">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="16" cy="16" r="10" />
+              <circle cx="16" cy="16" r="4" fill="currentColor" opacity="0.3" />
+            </svg>
+          </div>
+          <span>Grad-CAM</span>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 40 12"><path d="M0 6h32M28 1l8 5-8 5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-icon">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M8 24l4-8 4 4 8-12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <span>Diagnosis</span>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <section class="card upload-card glass">
+          <div class="card-header">
+            <h2 class="card-label">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+                <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 12.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" />
+              </svg>
+              Upload X-Ray
+            </h2>
+            <span class="card-tag">AI Input</span>
+          </div>
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Upload chest X-ray image"
+          >
+            <input
+              type="file"
+              id="file-input"
+              accept="image/png,image/jpeg,image/jpg"
+              hidden
+            />
+            <div class="dropzone-bg" aria-hidden="true"></div>
+            <div class="dropzone-content" id="dropzone-content">
+              <div class="dropzone-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none">
+                  <rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2" />
+                  <path d="M32 22v20M22 32h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  <circle cx="48" cy="18" r="8" fill="#3ecf8e" opacity="0.2" stroke="#3ecf8e" stroke-width="1.5" />
+                  <path d="M45 18h6M48 15v6" stroke="#3ecf8e" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+              </div>
+              <p class="dropzone-title">Drag and drop or click to upload</p>
+              <p class="dropzone-hint">PNG, JPG · Chest radiograph</p>
+            </div>
+            <div class="dropzone-preview hidden" id="dropzone-preview">
+              <img id="preview-img" alt="Uploaded X-ray preview" />
+              <button type="button" class="btn-clear" id="btn-clear" aria-label="Remove image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn-analyze" id="btn-analyze" disabled>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a4 4 0 0 1 4 4c0 1.5-.8 2.8-2 3.5V12h4a4 4 0 0 1 0 8h-1.5" stroke-linecap="round" />
+              <circle cx="12" cy="18" r="2" fill="currentColor" stroke="none" />
+            </svg>
+            <span class="btn-text">Run AI Analysis</span>
+            <span class="btn-spinner hidden" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <section class="card results-card glass">
+          <div class="card-header">
+            <h2 class="card-label">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+                <path d="M2 12h3l2-6 2 10 2-6h3" />
+              </svg>
+              AI Results
+            </h2>
+            <span class="card-tag card-tag--ai">Neural Output</span>
+          </div>
+          <div class="results-empty" id="results-empty">
+            <div class="empty-graphic" aria-hidden="true">
+              <svg viewBox="0 0 120 100" fill="none">
+                <ellipse cx="60" cy="50" rx="45" ry="38" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                <path d="M35 50c0-12 8-22 18-22s18 10 18 22" stroke="#3ecf8e" stroke-width="1.5" opacity="0.4" />
+                <path d="M42 55c5 8 12 12 18 12s13-4 18-12" stroke="#3ecf8e" stroke-width="1.5" opacity="0.4" />
+                <circle cx="60" cy="42" r="4" fill="#3ecf8e" opacity="0.3" />
+                <text x="60" y="88" text-anchor="middle" fill="currentColor" font-size="8" opacity="0.3">AWAITING SCAN</text>
+              </svg>
+            </div>
+            <p>Upload an X-ray to see AI predictions</p>
+          </div>
+          <div class="results-content hidden" id="results-content">
+            <div class="prediction-badge" id="prediction-badge">
+              <div class="prediction-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
+              </div>
+              <span class="prediction-label">AI Primary Diagnosis</span>
+              <span class="prediction-value" id="prediction-value">—</span>
+              <span class="prediction-confidence" id="prediction-confidence">—</span>
+            </div>
+            <ul class="confidence-list" id="confidence-list" aria-label="Confidence scores"></ul>
+          </div>
+        </section>
+      </div>
+
+      <section class="card heatmap-card glass">
+        <div class="card-header">
+          <h2 class="card-label">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+              <rect x="1" y="1" width="6" height="6" opacity="0.3" />
+              <rect x="9" y="1" width="6" height="6" opacity="0.6" />
+              <rect x="1" y="9" width="6" height="6" opacity="0.8" />
+              <rect x="9" y="9" width="6" height="6" />
+            </svg>
+            Grad-CAM Explainability
+          </h2>
+          <span class="card-tag">AI Attention Map</span>
+        </div>
+        <p class="card-desc">Visualizes which lung regions the neural network focuses on during classification.</p>
+        <div class="heatmap-grid">
+          <div class="heatmap-panel">
+            <div class="heatmap-label">Original X-ray</div>
+            <div class="heatmap-placeholder" id="heatmap-original">
+              <span class="placeholder-text">Original X-ray</span>
+            </div>
+          </div>
+          <div class="heatmap-panel">
+            <div class="heatmap-label">AI Heatmap Overlay</div>
+            <div class="heatmap-placeholder" id="heatmap-overlay">
+              <span class="placeholder-text">Heatmap overlay</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" opacity="0.5">
+          <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z" />
+          <path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </svg>
+        For educational use only — not a certified medical diagnostic tool.
+      </div>
+    </footer>
+
+    <script src="assets/js/graphics.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

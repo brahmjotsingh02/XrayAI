@@ -1,0 +1,10 @@
+fastapi==0.141.1
+uvicorn==0.52.0
+python-multipart==0.0.32
+torch==2.13.0
+torchvision==0.28.0
+pillow==12.3.0
+numpy==2.4.6
+scikit-learn==1.9.0
+grad-cam==1.5.5
+pywebview==6.2.1
