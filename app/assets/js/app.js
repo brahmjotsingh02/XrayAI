@@ -429,9 +429,7 @@
       );
 
 
-      fetch(
-        "http://localhost:8000/predict",
-        {
+      fetch("/predict", {
           method: "POST",
           body: formData
         }
